@@ -29,7 +29,9 @@ tasks:
 
 ```clojure
 {:deps {io.github.dspiteself/kube-edn
-        {:git/url "https://github.com/dspiteself/kube-edn" :git/sha "<pin-a-sha>"}}
+        {:git/url "https://github.com/dspiteself/kube-edn"
+         :git/tag "v0.1.0"
+         :git/sha "e281374"}}
  :tasks
  {:requires ([kube-edn.api :as kube] [babashka.cli :as cli])
 
