@@ -1,0 +1,24 @@
+;; The kube-edn library's own bb.edn — used for development and for running the
+;; tasks against an EDN tree in the current directory. Consuming repos get the
+;; same tasks by referencing this library as a :git or :local/root dependency
+;; (see README.md and example/bb.edn).
+{:paths ["src"]
+ :tasks
+ {:requires ([kube-edn.api :as kube] [babashka.cli :as cli])
+
+  :init (def cfg {:edn-dir "edn" :out-dir "output"})
+
+  render            {:doc "Render edn/ -> output/"
+                     :task (kube/render cfg (cli/parse-opts *command-line-args*))}
+  build             {:doc "Render, then kubectl kustomize output/<overlay>"
+                     :task (kube/build cfg (cli/parse-opts *command-line-args*))}
+  diff              {:doc "Render, then kubectl diff -k output/<overlay>"
+                     :task (kube/diff cfg (cli/parse-opts *command-line-args*))}
+  apply             {:doc "Render, then kubectl apply -k output/<overlay>"
+                     :task (kube/apply cfg (cli/parse-opts *command-line-args*))}
+  init              {:doc "Bootstrap a fresh GitOps repo (base + overlays)"
+                     :task (kube/init cfg (cli/parse-opts *command-line-args*))}
+  scaffold          {:doc "Scaffold a new service: --name foo [--group services] [--overlay production]"
+                     :task (kube/scaffold-service cfg (cli/parse-opts *command-line-args*))}
+  gen-kustomization {:doc "(Re)generate kustomization.edn: --dir <path> [--recursive]"
+                     :task (kube/gen-kustomization cfg (cli/parse-opts *command-line-args*))}}}

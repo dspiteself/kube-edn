@@ -1,0 +1,5 @@
+;; kube-edn is a pure-babashka library: clj-yaml, babashka.fs, babashka.process,
+;; babashka.cli and clojure.edn all ship with the babashka runtime, so there are
+;; no external dependencies to declare here. Consumers add this repo via :git or
+;; :local/root in their own bb.edn.
+{:paths ["src"]}

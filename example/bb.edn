@@ -1,0 +1,24 @@
+;; Example consuming GitOps repo. This uses a :local/root dependency so it runs
+;; directly from a checkout of kube-edn. A real repo would instead pin a git sha:
+;;
+;;   {:deps {io.github.dspiteself/kube-edn
+;;           {:git/url "https://github.com/dspiteself/kube-edn" :git/sha "<sha>"}}
+;;    ...}
+{:deps {io.github.dspiteself/kube-edn {:local/root ".."}}
+ :tasks
+ {:requires ([kube-edn.api :as kube] [babashka.cli :as cli])
+
+  :init (def cfg {:edn-dir "edn" :out-dir "output"})
+
+  render            {:doc "Render edn/ -> output/"
+                     :task (kube/render cfg (cli/parse-opts *command-line-args*))}
+  build             {:doc "Render, then kubectl kustomize output/<overlay>  (--overlay production)"
+                     :task (kube/build cfg (cli/parse-opts *command-line-args*))}
+  diff              {:doc "Render, then kubectl diff -k output/<overlay>  (--overlay production)"
+                     :task (kube/diff cfg (cli/parse-opts *command-line-args*))}
+  apply             {:doc "Render, then kubectl apply -k output/<overlay>  (--overlay production)"
+                     :task (kube/apply cfg (cli/parse-opts *command-line-args*))}
+  scaffold          {:doc "Scaffold a new service: --name foo"
+                     :task (kube/scaffold-service cfg (cli/parse-opts *command-line-args*))}
+  gen-kustomization {:doc "(Re)generate kustomization.edn: --dir <path> [--recursive]"
+                     :task (kube/gen-kustomization cfg (cli/parse-opts *command-line-args*))}}}
